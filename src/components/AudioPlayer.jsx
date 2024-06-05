@@ -128,7 +128,7 @@ const AudioPlayer = ({ src }) => {
                     <Image src={`${songInfo.coverUrl ? songInfo.coverUrl : "https://www.teachhub.com/wp-content/uploads/2019/10/Our-Top-10-Songs-About-School.png"}`} boxSize="50px" objectFit="cover" alt="Song cover" />
                     <Stack ml={4} spacing={0}>
                         <Heading as="h2" size="sm" fontSize="16px" isTruncated maxWidth="200px" >{`${songInfo.title ? songInfo.title : 'AudioBlend'}`}</Heading>
-                        <Text color="gray.500" fontSize="14px" isTruncated maxWidth="200px">{`${songInfo.artist?.name ? songInfo.artist.name : 'AudioBlend'}`}</Text>
+                        <Text color="gray.500" fontSize="14px" isTruncated maxWidth="200px">{`${songInfo.artist?.name ? songInfo.artist.name : (songInfo.artistName ?songInfo.artistName :  'AudioBlend')}`}</Text>
                     </Stack>
                 </Flex>
             </Box>

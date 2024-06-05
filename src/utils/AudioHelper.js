@@ -7,6 +7,8 @@ const playSong = (song) => {
         s.isPlaying = true;
         s.songInfo = song;
 
+        
+
     });
 }
 

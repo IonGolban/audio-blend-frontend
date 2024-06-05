@@ -3,6 +3,7 @@ import { Box, Image, Text, VStack, Card, CardHeader, CardFooter, CardBody, Flex,
 import { msToHumanReadable } from '../utils/UtilsHelper.js';
 import { addToQueue, playSong } from '../utils/AudioHelper.js';
 import { PiQueue } from "react-icons/pi";
+import { Link } from 'react-router-dom';
 export default function SongCard ({ song }) {
   const bgColor = useColorModeValue("white", "gray.800");
   const borderColor = useColorModeValue("gray.200", "gray.700");
@@ -29,7 +30,7 @@ export default function SongCard ({ song }) {
                     <Text fontWeight="bold" fontSize="lg" noOfLines={1}>
                         {song.title}
                     </Text>
-                    <Text fontSize="sm" color="gray.500" noOfLines={1}>
+                    <Text as = {Link} to = {`/artists/${song.artistId}`}fontSize="sm" color="gray.500" noOfLines={1}>
                         {song.artistName}
                     </Text>
                     <PiQueue onClick={(e) => {

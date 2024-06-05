@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import {
     Box,
     Flex,
@@ -15,17 +15,28 @@ import {
     useColorModeValue,
     Stack,
     useBreakpointValue,
-    Text
+    Text,
+    Input,
+    InputGroup,
+    InputRightElement,
+    List,
+    ListItem,
+    Icon
 } from "@chakra-ui/react";
-import { HamburgerIcon, CloseIcon } from "@chakra-ui/icons";
+import { HamburgerIcon, CloseIcon, SearchIcon } from "@chakra-ui/icons";
 import { Link } from "react-router-dom";
 import { useStoreState } from "pullstate";
 import AuthStore from "../stores/AuthStore.js";
+import { BASE_URL } from "../utils/Constants.js";
+import apiService from "../utils/ApiService.js";
+import { BiAlbum } from "react-icons/bi";
+import { CiMusicNote1 } from "react-icons/ci";
+import { GoPerson } from "react-icons/go";
+import {playSong} from "../utils/AudioHelper.js";
 
 const Links = [{ name: "Home", link: "/home" }, { name: "Feed", link: "/feed" }, { name: "Library", link: "/library" }];
 
 const NavLink = ({ to, name }) => {
-   
     return (
         <Box
             as="a"
@@ -46,12 +57,29 @@ const NavLink = ({ to, name }) => {
 
 export default function Simple() {
     const { isOpen, onOpen, onClose } = useDisclosure();
-        const isAuth = useStoreState(AuthStore, s => s.isAuth);
-
+    const isAuth = useStoreState(AuthStore, s => s.isAuth);
     const showNavbar = useBreakpointValue({ base: false, md: true });
-    const LinksMenu =  isAuth ?
-    [{ name: "Profile", link: "/profile" }, { name: "Settings", link: "/settings" }, { name: "Logout", link: "/login" }]
+    const LinksMenu = isAuth ?
+        [{ name: "Profile", link: "/profile" }, { name: "Settings", link: "/settings" }, { name: "Logout", link: "/login" }]
         : [{ name: "Login", link: "/login" }, { name: "Register", link: "/register" }];
+    const count_suggestions = 5;
+    const [searchQuery, setSearchQuery] = useState("");
+    const [suggestions, setSuggestions] = useState([]);
+
+    const handleSearch = async (e) => {
+        setSearchQuery(e.target.value);
+        if (e.target.value.length > 2) {
+            const path = `${BASE_URL}music-data/search`
+            const data = await apiService('GET', path, null, { query: e.target.value, count: count_suggestions });
+            setSuggestions(data);
+            console.log("Suggestions:", data);
+        } else {
+            setSuggestions([]);
+        }
+    };
+    const handlePlaySong = (song) => {
+        playSong(song);
+    }
     return (
         <>
             {showNavbar && (
@@ -64,12 +92,23 @@ export default function Simple() {
                             display={{ md: "none" }}
                             onClick={isOpen ? onClose : onOpen}
                         />
-                        <HStack w="full" spacing={8} justifyContent="center">
+                        <HStack w="full" spacing={8} justifyContent="space-between">
                             <HStack as={"nav"} spacing={4} display={{ base: "none", md: "flex" }} justifyContent={"center"}>
                                 {Links.map((link) => (
                                     <NavLink key={link.name} to={link.link} name={link.name} />
                                 ))}
                             </HStack>
+                            <InputGroup maxW="400px">
+                                <Input
+                                    type="text"
+                                    placeholder="Search"
+                                    value={searchQuery}
+                                    onChange={handleSearch}
+                                />
+                                <InputRightElement pointerEvents="none">
+                                    <SearchIcon color="gray.500" />
+                                </InputRightElement>
+                            </InputGroup>
                         </HStack>
                         <Flex alignItems={"center"}>
                             <Menu>
@@ -104,6 +143,39 @@ export default function Simple() {
                     )}
                 </Box>
             )}
+            <Box zIndex="1000" position="absolute" top="70px" right="20px" width="450px" justifyItems={'center'}>
+                <Flex mt={2} bg={useColorModeValue("gray.50", "gray.900")} px={4} rounded="md" shadow="md" width="100%">
+                    <List spacing={2} width="100%">
+                        {suggestions?.albums?.map((suggestion, index) => (
+                            <ListItem key={index} py={2} px={4} _hover={{ bg: useColorModeValue("gray.200", "gray.700") }}>
+                                <Flex alignItems="center" as = {Link} to={`/albums/${suggestion.id}` }  >
+                                    <Icon as={BiAlbum} w={6} h={6} mr={2} />
+                                    <Text>{suggestion.title}</Text>
+                                    <Text ml={2} color="gray.500">{suggestion.artistName}</Text>
+                                </Flex>
+                            </ListItem>
+                        ))}
+                        {suggestions?.songs?.map((suggestion, index) => (
+                            <ListItem key={index} py={2} px={4} _hover={{ bg: useColorModeValue("gray.200", "gray.700") }}>
+                                <Flex alignItems="center" as = {Button} onClick={ () => handlePlaySong(suggestion)}>
+                                    <Icon as={CiMusicNote1} w={6} h={6} mr={2} />
+                                    <Text>{suggestion.title}</Text>
+                                    <Text ml={2} color="gray.500">{suggestion.artistName}</Text>
+
+                                </Flex>
+                            </ListItem>
+                        ))}
+                        {suggestions?.artists?.map((suggestion, index) => (
+                            <ListItem key={index} py={2} px={4} _hover={{ bg: useColorModeValue("gray.200", "gray.700") }}>
+                                <Flex alignItems="center">
+                                    <Icon as={GoPerson} w={6} h={6} mr={2} />
+                                    <Text>{suggestion.name}</Text>
+                                </Flex>
+                            </ListItem>
+                        ))}
+                    </List>
+                </Flex>
+            </Box>
         </>
     );
 }

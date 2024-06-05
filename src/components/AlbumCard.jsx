@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 export default function AlbumCard({ album }) {
     const bgColor = useColorModeValue("white", "gray.800");
     const borderColor = useColorModeValue("gray.200", "gray.700");
-    
+    console.log("album", album);    
     return (
         <Box
             bg={bgColor}
@@ -28,7 +28,7 @@ export default function AlbumCard({ album }) {
                     <Text fontWeight="bold" fontSize="medium" noOfLines={1}>
                         {album.title}
                     </Text>
-                    <Text fontSize="sm" color="gray.500" noOfLines={1}>
+                    <Text as = {Link} to={`/artist/${album.artistId}`} fontSize="sm" color="gray.500" noOfLines={1}>
                         {album.artistName}
                     </Text>
                 </VStack>

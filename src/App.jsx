@@ -15,6 +15,9 @@ import RegisterPage from "./pages/RegisterPage.jsx";
 import AuthStore from "./stores/AuthStore.js";
 import MainLayout from "./pages/MainLayout.jsx";
 import AlbumPage from "./pages/AlbumPage.jsx";
+import ArtistPage from "./pages/ArtistPage.jsx";
+import PlaylistPage from "./pages/PlaylistPage.jsx";
+import ProfilePage from "./pages/ProfilePage.jsx";
 
 
 export default function App() {
@@ -46,7 +49,7 @@ export default function App() {
       <Router>
         <LibraryPanel />
         <MainLayout>
-        <NavBar/>
+          <NavBar />
 
           <Routes>
             <Route path="/" element={<MainPage />} />
@@ -54,6 +57,9 @@ export default function App() {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/albums/:albumid" element={<AlbumPage />} />
+            <Route path="/artist/:artistid" element={<ArtistPage />} />
+            <Route path="/playlists/:playlistid" element={<PlaylistPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
           </Routes>
         </MainLayout>
       </Router>
