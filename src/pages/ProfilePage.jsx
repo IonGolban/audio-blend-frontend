@@ -5,6 +5,7 @@ import apiService from '../utils/ApiService.js';
 import { BASE_URL } from '../utils/Constants.js';
 import AuthStore from '../stores/AuthStore.js';
 import FeedItems from '../components/FeedItems.jsx';
+import AddItemCard from '../components/AddItemCard';
 
 const ProfilePage = () => {
     const [user, setUser] = useState(null);
@@ -17,6 +18,7 @@ const ProfilePage = () => {
     const [likedAlbums, setLikedAlbums] = useState([]);
     const [recommendedSongs, setRecommendedSongs] = useState([]);
     const [isArtistMode, setIsArtistMode] = useState(false);
+    
 
     const isAuth = AuthStore.useState(s => s.isAuth);
 
@@ -59,7 +61,6 @@ const ProfilePage = () => {
                 const likedPlaylists = await apiService('GET', `${BASE_URL}music-data/playlists/liked`);
                 const likedAlbums = await apiService('GET', `${BASE_URL}music-data/albums/liked`);
                 const recommendedSongs = await apiService('GET', `${BASE_URL}music-data/songs/auth/random`, null, { count: 50 });
-                
 
                 setLikedSongs(likedSongs);
                 setPlaylists(userPlaylists);
@@ -113,67 +114,62 @@ const ProfilePage = () => {
     );
 };
 
-
 const artistContent = (artist, songs, albums) => {
-    return (<Tabs variant="soft-rounded" colorScheme="teal">
-        <TabList>
-            <Tab>Uploaded Songs</Tab>
-            <Tab>Uploaded Albums</Tab>
-
-        </TabList>
-
-        <TabPanels>
-
-            <TabPanel>
-                <Heading as="h3" size="lg" mb={4}>Uploaded Songs</Heading>
-                <FeedItems items={songs} type="song" />
-            </TabPanel>
-            <TabPanel>
-                <Heading as="h3" size="lg" mb={4}>Uploaded Albums</Heading>
-                <FeedItems items={albums} type="album" />
-            </TabPanel>
-        </TabPanels>
-
-
-
-    </Tabs>
-
-    )
-}
-
+    return (
+        <Tabs variant="soft-rounded" colorScheme="teal">
+            <TabList>
+                <Tab>Uploaded Songs</Tab>
+                <Tab>Uploaded Albums</Tab>
+            </TabList>
+            <TabPanels>
+                <TabPanel>
+                    <Heading as="h3" size="lg" mb={4}>Uploaded Songs</Heading>
+                    <SimpleGrid columns={[1, 2, 3]} spacing={4}>
+                        <AddItemCard type="song" />
+                        <FeedItems items={songs} type="song" />
+                    </SimpleGrid>
+                </TabPanel>
+                <TabPanel>
+                    <Heading as="h3" size="lg" mb={4}>Uploaded Albums</Heading>
+                    <SimpleGrid columns={[1, 2, 3]} spacing={4}>
+                        <AddItemCard type="album" />
+                        <FeedItems items={albums} type="album" />
+                    </SimpleGrid>
+                </TabPanel>
+            </TabPanels>
+        </Tabs>
+    );
+};
 
 const userContent = (likedSongs, likedPlaylists, likedAlbums, playlists) => {
-    return (<Tabs variant="soft-rounded" colorScheme="teal">
-        <TabList>
-
-            <Tab>Liked Songs</Tab>
-            <Tab>Liked Playlists</Tab>
-            <Tab>Liked Albums</Tab>
-            <Tab>Playlists</Tab>
-
-        </TabList>
-
-        <TabPanels>
-            <TabPanel>
-                <Heading as="h3" size="lg" mb={4}>Liked Songs</Heading>
-                <FeedItems items={likedSongs} type="song" />
-            </TabPanel>
-            <TabPanel>
-                <Heading as="h3" size="lg" mb={4}>Liked Playlists</Heading>
-                <FeedItems items={likedPlaylists} type="playlist" />
-            </TabPanel>
-            <TabPanel>
-                <Heading as="h3" size="lg" mb={4}>Liked Albums</Heading>
-                <FeedItems items={likedAlbums} type="album" />
-            </TabPanel>
-            <TabPanel>
-                <Heading as="h3" size="lg" mb={4}>Playlists</Heading>
-                <FeedItems items={playlists} type="playlist" />
-            </TabPanel>
-        </TabPanels>
-    </Tabs>
-
-    )
-}
+    return (
+        <Tabs variant="soft-rounded" colorScheme="teal">
+            <TabList>
+                <Tab>Liked Songs</Tab>
+                <Tab>Liked Playlists</Tab>
+                <Tab>Liked Albums</Tab>
+                <Tab>Playlists</Tab>
+            </TabList>
+            <TabPanels>
+                <TabPanel>
+                    <Heading as="h3" size="lg" mb={4}>Liked Songs</Heading>
+                    <FeedItems items={likedSongs} type="song" />
+                </TabPanel>
+                <TabPanel>
+                    <Heading as="h3" size="lg" mb={4}>Liked Playlists</Heading>
+                    <FeedItems items={likedPlaylists} type="playlist" />
+                </TabPanel>
+                <TabPanel>
+                    <Heading as="h3" size="lg" mb={4}>Liked Albums</Heading>
+                    <FeedItems items={likedAlbums} type="album" />
+                </TabPanel>
+                <TabPanel>
+                    <Heading as="h3" size="lg" mb={4}>Playlists</Heading>
+                    <FeedItems items={playlists} type="playlist" />
+                </TabPanel>
+            </TabPanels>
+        </Tabs>
+    );
+};
 
 export default ProfilePage;

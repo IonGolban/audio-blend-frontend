@@ -25,12 +25,17 @@ export default function App() {
   const isAuth = AuthStore.useState((s) => s.isAuth);
 
   useEffect(() => {
-    checkAuth(token).then(({ isAuth, username }) => {
+    checkAuth(token).then(({ isAuth, username, id }) => {
+      console.log("id from response", id);
+      
       if (isAuth) {
         AuthStore.update((s) => {
           s.isAuth = isAuth;
           s.username = username;
+          s.id = id;
         });
+
+        
 
         setAuthToken(token);
         console.log("User is authenticated");

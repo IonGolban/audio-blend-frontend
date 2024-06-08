@@ -11,7 +11,8 @@ export async function checkAuth(token) {
         'Authorization': `Bearer ${token}`
     }})
     .then((res) => {
-      return { isAuth: true, username: res.data.username, email: res.data.email };
+      console.log("Is authentificated:", res.data);
+      return { isAuth: true, id:res.data.id ,username: res.data.username, email: res.data.email };
     })
     .catch((error) => {
       console.log("Is not authentificated or :", error.message);

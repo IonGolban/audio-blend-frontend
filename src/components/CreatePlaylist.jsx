@@ -57,8 +57,8 @@ const CreatePlaylist = ({ isOpen, onClose }) => {
         formData.append('description', description);
         formData.append('isPublic', isPublic);
         formData.append('image', photo);
-
-        try {
+        console.log("Creating playlist", formData);
+        try {   
             const response = await fetch('https://localhost:7195/api/v1/music-data/playlists/add', {
                 method: 'POST',
                 body: formData,

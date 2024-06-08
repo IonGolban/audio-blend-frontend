@@ -22,12 +22,11 @@ import { BASE_URL } from '../utils/Constants.js';
 import AuthStore from '../stores/AuthStore.js';
 import AddToPlaylistModal from './AddToPlaylistModal.jsx';
 
-export default function SongList({ items, listId, type }) {
+export default function SongList({ setItems,items, listId, type, isUserPlaylist }) {
     const [likedSongs, setLikedSongs] = useState([]);
     const isAuth = AuthStore.useState(s => s.isAuth);
     const [isAddToPlaylistOpen, setIsAddToPlaylistOpen] = useState(false);
     const [selectedSongId, setSelectedSongId] = useState(null);
-
     useEffect(() => {
         const fetchLikedSongs = async () => {
             let url = type === 'album' ? `${BASE_URL}music-data/likes/songs/album/${listId}` : `${BASE_URL}music-data/likes/songs/playlist/${listId}`;
@@ -70,6 +69,21 @@ export default function SongList({ items, listId, type }) {
     const handleAddToPlaylistClick = (songId) => {
         setSelectedSongId(songId);
         setIsAddToPlaylistOpen(true);
+    }
+
+    const handleRemoveFromPlaylist = async (songId) => {
+        const body = {
+            songId: songId,
+            playlistId: listId
+        }
+        const response = await apiService("DELETE", `${BASE_URL}music-data/playlist-songs`, body);
+        console.log("response : ",response);
+        if (response) {
+            const newItems = items.filter(item => item.id !== songId);
+            setItems(newItems);
+        } else {
+            console.log("Failed to remove song from playlist");
+        }
     }
 
     return (
@@ -115,6 +129,7 @@ export default function SongList({ items, listId, type }) {
                                     <MenuList>
                                         <MenuItem onClick={() => handleAddToQueue(item)}>Add to Queue</MenuItem>
                                         <MenuItem onClick={() => handleAddToPlaylistClick(item.id)}>Add to Playlist</MenuItem>
+                                        {isUserPlaylist && <MenuItem onClick={() => handleRemoveFromPlaylist(item.id)}>Delete</MenuItem>}
                                         <MenuItem>Share</MenuItem>
                                     </MenuList>
                                 </Menu>
