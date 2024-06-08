@@ -18,6 +18,7 @@ import {
     VStack,
     HStack,
     Image,
+    Button,
 } from "@chakra-ui/react";
 import {
     FiHome,
@@ -27,7 +28,8 @@ import {
     FiSettings,
     FiMenu, 
 } from "react-icons/fi";
-import { FaMusic, FaPlay, FaRandom } from "react-icons/fa";
+import { FaMusic, FaPlay, FaRandom, FaPlus } from "react-icons/fa";
+import CreatePlaylist from "./CreatePlaylist.jsx";
 
 const LinkItems = [
     { name: "Home", icon: FiHome },
@@ -102,7 +104,7 @@ export default function SimpleSidebar({ children }) {
                         size="full"
                     >
                         <DrawerContent>
-                            <SidebarContent onClose={onLeftClose} albums={albums} playlists={playlists} randomItems={randomItems} goto={goto} />
+                            <SidebarContent isAuth = {isAuth} onClose={onLeftClose} albums={albums} playlists={playlists} randomItems={randomItems} goto={goto} />
                         </DrawerContent>
                     </Drawer>
                     <Drawer
@@ -126,7 +128,8 @@ export default function SimpleSidebar({ children }) {
     );
 }
 
-const SidebarContent = ({ onClose, albums, playlists, randomItems, goto, ...rest }) => {
+const SidebarContent = ({ isAuth, onClose, albums, playlists, randomItems, goto, ...rest }) => {
+    const [isPlaylistModalOpen, setPlaylistModalOpen] = useState(false);
     return (
         <Box
             bg={useColorModeValue("gray.50", "gray.800")}
@@ -146,11 +149,17 @@ const SidebarContent = ({ onClose, albums, playlists, randomItems, goto, ...rest
                 </Link>
                 <CloseButton display={{ base: "flex", md: "none" }} onClick={onClose} />
             </Flex>
+                <Button p = {5} onClick={()=> setPlaylistModalOpen(true)}>
+                    + Playlist
+                </Button>
             <VStack spacing={4} mt={4}>
                 <Section title="Albums" items={albums} icon={FaMusic} goto={goto}/>
                 <Section title="Playlists" items={playlists} icon={FaPlay} goto={goto} />
                 <Section title="Random" items={randomItems} icon={FaRandom} goto={goto} />
+                
             </VStack>
+        <CreatePlaylist isOpen={isPlaylistModalOpen} onClose={()=>setPlaylistModalOpen(false)} />
+
         </Box>
     );
 };

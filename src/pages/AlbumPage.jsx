@@ -20,6 +20,10 @@ export default function AlbumPage({ children }) {
         const fetchData = async () => {
             try {
                 const response = await apiService('GET', `${BASE_URL}music-data/albums/${albumid}`);
+                if (isAuth) {
+                    const likedAlbum = await apiService('GET', `${BASE_URL}music-data/likes/album/check/${albumid}`);
+                    setLikedAlbum(likedAlbum?true:false);
+                }
                 setAlbum(response);
                 console.log(response);
             } catch (error) {
@@ -45,6 +49,18 @@ export default function AlbumPage({ children }) {
             </Flex>
         );
     }
+    const handleToggleLike = async (item) => {
+        console.log("likedAlbum", likedAlbum);
+        if (!likedAlbum) {
+            const response = await apiService("POST", `${BASE_URL}music-data/likes/add/album/${item.id}`);
+            console.log(response);
+            setLikedAlbum(true);
+        } else {
+            const response = await apiService("DELETE", `${BASE_URL}music-data/likes/remove/album/${item.id}`);
+            console.log(response);
+            setLikedAlbum(false);
+        }
+    }
 
     return (
         <Flex p={10} justifyContent="center" flexDirection="column" alignItems="center" maxW="800px" mx="auto">
@@ -58,7 +74,7 @@ export default function AlbumPage({ children }) {
                     {isAuth && <IconButton
                         icon={likedAlbum ? <FaHeart /> : <FaRegHeart />}
                         colorScheme={likedAlbum ? "red" : "gray"}
-                        onClick={() => handleToggleLike(item)}
+                        onClick={() => handleToggleLike(album)}
                         aria-label="Like"
                         variant="ghost"
 

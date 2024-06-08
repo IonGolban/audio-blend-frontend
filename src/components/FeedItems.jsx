@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { SimpleGrid, Box, Button, Flex } from '@chakra-ui/react';
 import SongCard from './SongCard';
 import AlbumCard from './AlbumCard';
+import PlaylistCard from './PlaylistCard';
 
 const FeedItems = ({ items,type }) => {
   const itemsPerPage = 16;
@@ -26,7 +27,7 @@ const FeedItems = ({ items,type }) => {
     <Box>
       <SimpleGrid columns={[1, null, 8]} spacing="20px" p='3'>
         {currentItems.map((item) => (
-        type == "album" ? <AlbumCard key={item.id} album={item} /> : <SongCard key={item.id} song={item} />
+        type == "album" ? <AlbumCard key={item.id} album={item} /> : (type=="song" ?<SongCard key={item.id} song={item} /> : <PlaylistCard key={item.id} playlist={item} />)
       ))}
       </SimpleGrid>
       <Flex justifyContent="center" mt={4}>
