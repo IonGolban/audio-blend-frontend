@@ -1,5 +1,4 @@
-"use client";
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
     Box,
     Flex,
@@ -24,7 +23,7 @@ import {
     Icon
 } from "@chakra-ui/react";
 import { HamburgerIcon, CloseIcon, SearchIcon } from "@chakra-ui/icons";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useStoreState } from "pullstate";
 import AuthStore from "../stores/AuthStore.js";
 import { BASE_URL } from "../utils/Constants.js";
@@ -32,7 +31,7 @@ import apiService from "../utils/ApiService.js";
 import { BiAlbum } from "react-icons/bi";
 import { CiMusicNote1 } from "react-icons/ci";
 import { GoPerson } from "react-icons/go";
-import {playSong} from "../utils/AudioHelper.js";
+import { playSong } from "../utils/AudioHelper.js";
 
 const Links = [{ name: "Home", link: "/home" }, { name: "Feed", link: "/feed" }, { name: "Library", link: "/library" }];
 
@@ -60,16 +59,18 @@ export default function Simple() {
     const isAuth = useStoreState(AuthStore, s => s.isAuth);
     const showNavbar = useBreakpointValue({ base: false, md: true });
     const LinksMenu = isAuth ?
-        [{ name: "Profile", link: "/profile" }, { name: "Settings", link: "/settings" }, { name: "Logout", link: "/login" }]
+        [{ name: "Profile", link: "/profile" }, { name: "Settings", link: "/profile/settings" }, { name: "Logout", link: "/login" }]
         : [{ name: "Login", link: "/login" }, { name: "Register", link: "/register" }];
     const count_suggestions = 5;
     const [searchQuery, setSearchQuery] = useState("");
     const [suggestions, setSuggestions] = useState([]);
+    const navigate = useNavigate();
+    const suggestionsRef = useRef();
 
     const handleSearch = async (e) => {
         setSearchQuery(e.target.value);
         if (e.target.value.length > 2) {
-            const path = `${BASE_URL}music-data/search`
+            const path = `${BASE_URL}music-data/search`;
             const data = await apiService('GET', path, null, { query: e.target.value, count: count_suggestions });
             setSuggestions(data);
             console.log("Suggestions:", data);
@@ -77,9 +78,28 @@ export default function Simple() {
             setSuggestions([]);
         }
     };
+
     const handlePlaySong = (song) => {
         playSong(song);
-    }
+    };
+
+    const handleSeeAll = () => {
+        navigate(`/search?query=${searchQuery}`);
+    };
+
+    const handleClickOutside = (e) => {
+        if (suggestionsRef.current && !suggestionsRef.current.contains(e.target)) {
+            setSuggestions([]);
+        }
+    };
+
+    useEffect(() => {
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
+
     return (
         <>
             {showNavbar && (
@@ -143,39 +163,46 @@ export default function Simple() {
                     )}
                 </Box>
             )}
-            <Box zIndex="1000" position="absolute" top="70px" right="20px" width="450px" justifyItems={'center'}>
-                <Flex mt={2} bg={useColorModeValue("gray.50", "gray.900")} px={4} rounded="md" shadow="md" width="100%">
-                    <List spacing={2} width="100%">
-                        {suggestions?.albums?.map((suggestion, index) => (
-                            <ListItem key={index} py={2} px={4} _hover={{ bg: useColorModeValue("gray.200", "gray.700") }}>
-                                <Flex alignItems="center" as = {Link} to={`/albums/${suggestion.id}` }  >
-                                    <Icon as={BiAlbum} w={6} h={6} mr={2} />
-                                    <Text>{suggestion.title}</Text>
-                                    <Text ml={2} color="gray.500">{suggestion.artistName}</Text>
+            {(suggestions.albums?.length > 0 || suggestions.songs?.length > 0 || suggestions.artists?.length > 0) && (
+                <Box ref={suggestionsRef} zIndex="1000" position="absolute" top="70px" right="20px" width="450px" justifyItems={'center'} overflowY={'scroll'}>
+                    <Flex mt={2} bg={useColorModeValue("gray.50", "gray.900")} px={4} rounded="md" shadow="md" width="100%">
+                        <List spacing={2} width="100%">
+                            {suggestions.albums?.map((suggestion, index) => (
+                                <ListItem key={index} py={2} px={4} _hover={{ bg: useColorModeValue("gray.200", "gray.700") }}>
+                                    <Flex alignItems="center" as={Link} to={`/albums/${suggestion.id}`}>
+                                        <Icon as={BiAlbum} w={6} h={6} mr={2} />
+                                        <Text>{suggestion.title}</Text>
+                                        <Text ml={2} color="gray.500">{suggestion.artistName}</Text>
+                                    </Flex>
+                                </ListItem>
+                            ))}
+                            {suggestions.songs?.map((suggestion, index) => (
+                                <ListItem key={index} py={2} px={4} _hover={{ bg: useColorModeValue("gray.200", "gray.700") }}>
+                                    <Flex alignItems="center" as={Button} onClick={() => handlePlaySong(suggestion)}>
+                                        <Icon as={CiMusicNote1} w={6} h={6} mr={2} />
+                                        <Text>{suggestion.title}</Text>
+                                        <Text ml={2} color="gray.500">{suggestion.artistName}</Text>
+                                    </Flex>
+                                </ListItem>
+                            ))}
+                            {suggestions.artists?.map((suggestion, index) => (
+                                <ListItem key={index} py={2} px={4} _hover={{ bg: useColorModeValue("gray.200", "gray.700") }}>
+                                    <Flex alignItems="center" as={Link} to={`/artists/${suggestion.id}`}>
+                                        <Icon as={GoPerson} w={6} h={6} mr={2} />
+                                        <Text>{suggestion.name}</Text>
+                                    </Flex>
+                                </ListItem>
+                            ))}
+                            <ListItem py={2} px={4} _hover={{ bg: useColorModeValue("gray.200", "gray.700") }}>
+                                <Flex alignItems="center" as={Link} to='/search' onClick={handleSeeAll}>
+                                    <Text>See All</Text>
                                 </Flex>
                             </ListItem>
-                        ))}
-                        {suggestions?.songs?.map((suggestion, index) => (
-                            <ListItem key={index} py={2} px={4} _hover={{ bg: useColorModeValue("gray.200", "gray.700") }}>
-                                <Flex alignItems="center" as = {Button} onClick={ () => handlePlaySong(suggestion)}>
-                                    <Icon as={CiMusicNote1} w={6} h={6} mr={2} />
-                                    <Text>{suggestion.title}</Text>
-                                    <Text ml={2} color="gray.500">{suggestion.artistName}</Text>
-
-                                </Flex>
-                            </ListItem>
-                        ))}
-                        {suggestions?.artists?.map((suggestion, index) => (
-                            <ListItem key={index} py={2} px={4} _hover={{ bg: useColorModeValue("gray.200", "gray.700") }}>
-                                <Flex alignItems="center">
-                                    <Icon as={GoPerson} w={6} h={6} mr={2} />
-                                    <Text>{suggestion.name}</Text>
-                                </Flex>
-                            </ListItem>
-                        ))}
-                    </List>
-                </Flex>
-            </Box>
+                        </List>
+                    </Flex>
+                </Box>
+            )}
         </>
+        
     );
 }

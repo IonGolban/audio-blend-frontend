@@ -30,14 +30,14 @@ const FeedItems = ({ items,type }) => {
         type == "album" ? <AlbumCard key={item.id} album={item} /> : (type=="song" ?<SongCard key={item.id} song={item} /> : <PlaylistCard key={item.id} playlist={item} />)
       ))}
       </SimpleGrid>
-      <Flex justifyContent="center" mt={4}>
-        <Button onClick={handlePreviousPage} isDisabled={currentPage === 1}>
+      {!items.length && <Flex justifyContent="center" mt={4}>
+          <Button onClick={handlePreviousPage} isDisabled={currentPage === 1}>
           Previous
         </Button>
         <Button onClick={handleNextPage} isDisabled={currentPage * itemsPerPage >= items.length} ml={4}>
           Next
         </Button>
-      </Flex>
+      </Flex>}
     </Box>
   );
 };

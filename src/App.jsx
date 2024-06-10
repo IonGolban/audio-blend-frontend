@@ -18,6 +18,7 @@ import AlbumPage from "./pages/AlbumPage.jsx";
 import ArtistPage from "./pages/ArtistPage.jsx";
 import PlaylistPage from "./pages/PlaylistPage.jsx";
 import ProfilePage from "./pages/ProfilePage.jsx";
+import ProfileSettingsPage from "./pages/ProfileSettingsPage.jsx";
 
 
 export default function App() {
@@ -65,6 +66,8 @@ export default function App() {
             <Route path="/artist/:artistid" element={<ArtistPage />} />
             <Route path="/playlists/:playlistid" element={<PlaylistPage />} />
             <Route path="/profile" element={<ProfilePage />} />
+            <Route path="*" element={<h1>Not Found</h1>} />
+            <Route path="/profile/settings" element={<ProfileSettingsPage/>}/>
           </Routes>
         </MainLayout>
       </Router>

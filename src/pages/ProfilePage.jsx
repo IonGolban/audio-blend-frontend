@@ -18,7 +18,7 @@ const ProfilePage = () => {
     const [likedAlbums, setLikedAlbums] = useState([]);
     const [recommendedSongs, setRecommendedSongs] = useState([]);
     const [isArtistMode, setIsArtistMode] = useState(false);
-    
+
 
     const isAuth = AuthStore.useState(s => s.isAuth);
 
@@ -89,7 +89,7 @@ const ProfilePage = () => {
             <Flex alignItems="center" mb={6}>
                 <Avatar size="2xl" src={user.imgUrl} />
                 <Box ml={4}>
-                    <Heading as="h2" size="xl">{user.username}</Heading>
+                    <Heading as="h2" size="lg" >{user.username}</Heading>
                     <Text fontSize="lg">{user.bio}</Text>
                 </Box>
                 {!artistInfo && (
