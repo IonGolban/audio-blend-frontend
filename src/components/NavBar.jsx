@@ -23,7 +23,7 @@ import {
     Icon
 } from "@chakra-ui/react";
 import { HamburgerIcon, CloseIcon, SearchIcon } from "@chakra-ui/icons";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, createSearchParams } from "react-router-dom";
 import { useStoreState } from "pullstate";
 import AuthStore from "../stores/AuthStore.js";
 import { BASE_URL } from "../utils/Constants.js";
@@ -32,6 +32,7 @@ import { BiAlbum } from "react-icons/bi";
 import { CiMusicNote1 } from "react-icons/ci";
 import { GoPerson } from "react-icons/go";
 import { playSong } from "../utils/AudioHelper.js";
+
 
 const Links = [{ name: "Home", link: "/home" }, { name: "Feed", link: "/feed" }, { name: "Library", link: "/library" }];
 
@@ -84,7 +85,8 @@ export default function Simple() {
     };
 
     const handleSeeAll = () => {
-        navigate(`/search?query=${searchQuery}`);
+        const q = createSearchParams({ query: searchQuery });
+        navigate(`/search?${q}`);
     };
 
     const handleClickOutside = (e) => {
@@ -194,7 +196,7 @@ export default function Simple() {
                                 </ListItem>
                             ))}
                             <ListItem py={2} px={4} _hover={{ bg: useColorModeValue("gray.200", "gray.700") }}>
-                                <Flex alignItems="center" as={Link} to='/search' onClick={handleSeeAll}>
+                                <Flex alignItems="center" as={Button} onClick={() => handleSeeAll()}>
                                     <Text>See All</Text>
                                 </Flex>
                             </ListItem>

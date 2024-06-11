@@ -121,7 +121,7 @@ export default function SongList({ setItems,items, listId, type, isUserPlaylist 
                             </Td>
                             <Td>{msToHumanReadable(item.duration)}</Td>
                             <Td>{item.artistName}</Td>
-                            <Td>{item.genres}</Td>
+                            <Td>{item.genres.map(g => g.name).join(", ")}</Td>
                             <Td>{item.popularity ? item.popularity : "0"}</Td>
                             <Td>
                                 <Menu>

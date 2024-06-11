@@ -5,7 +5,6 @@ import { Link } from 'react-router-dom';
 export default function AlbumCard({ album }) {
     const bgColor = useColorModeValue("white", "gray.800");
     const borderColor = useColorModeValue("gray.200", "gray.700");
-    console.log("album", album);    
     return (
         <Box
             bg={bgColor}

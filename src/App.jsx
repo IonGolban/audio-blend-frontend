@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from "react"
 import { ChakraProvider } from "@chakra-ui/react"
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
-import TestPlayer from "./components/TestPlayer.jsx";
 import LibraryPanel from "./components/LibraryPanel.jsx";
 import AudioPlayer from "./components/AudioPlayer.jsx";
 import { AudioPlayerProvider } from "./AudioPlayerProvider.jsx";
@@ -19,7 +18,7 @@ import ArtistPage from "./pages/ArtistPage.jsx";
 import PlaylistPage from "./pages/PlaylistPage.jsx";
 import ProfilePage from "./pages/ProfilePage.jsx";
 import ProfileSettingsPage from "./pages/ProfileSettingsPage.jsx";
-
+import SearchPage from "./pages/SearchPage.jsx";
 
 export default function App() {
   const token = localStorage.getItem("token");
@@ -28,7 +27,7 @@ export default function App() {
   useEffect(() => {
     checkAuth(token).then(({ isAuth, username, id }) => {
       console.log("id from response", id);
-      
+
       if (isAuth) {
         AuthStore.update((s) => {
           s.isAuth = isAuth;
@@ -36,7 +35,7 @@ export default function App() {
           s.id = id;
         });
 
-        
+
 
         setAuthToken(token);
         console.log("User is authenticated");
@@ -67,7 +66,8 @@ export default function App() {
             <Route path="/playlists/:playlistid" element={<PlaylistPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="*" element={<h1>Not Found</h1>} />
-            <Route path="/profile/settings" element={<ProfileSettingsPage/>}/>
+            <Route path="/profile/settings" element={<ProfileSettingsPage />} />
+            <Route path="/search"  element={<SearchPage />} />
           </Routes>
         </MainLayout>
       </Router>

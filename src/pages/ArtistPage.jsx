@@ -72,10 +72,10 @@ const ArtistPage = () => {
     return (
         <Box px={4} py={6}>
             <Flex alignItems="center" mb={6}>
-                <Avatar size="2xl" src={artist.imageUrl} />
+                <Avatar size="2xl" src={artist.imgUrl} />
                 <Box ml={4}>
                     <Heading as="h2" size="xl">{artist.name}</Heading>
-                    <Text fontSize="lg">{artist.genres}</Text>
+                    <Text fontSize="lg">{artist.genres.map(g => g.name).join(', ')}</Text>
                     <Text mt={2}>{artist.description}</Text>
                     <Text mt={2} fontSize={"sm"}>{artist.followers} followers</Text>
                     <Button

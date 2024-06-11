@@ -89,7 +89,7 @@ const ProfilePage = () => {
             <Flex alignItems="center" mb={6}>
                 <Avatar size="2xl" src={user.imgUrl} />
                 <Box ml={4}>
-                    <Heading as="h2" size="lg" >{user.username}</Heading>
+                    <Heading as="h2" size="xl" variant={'outline'}>{user.username}</Heading>
                     <Text fontSize="lg">{user.bio}</Text>
                 </Box>
                 {!artistInfo && (
