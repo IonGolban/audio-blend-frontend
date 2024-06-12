@@ -29,9 +29,10 @@ export default function PlaylistPage({ children }) {
                     setLiked(likedPlaylist ? true : false);
                 }
                 const userPlaylistApi = await apiService('GET', `${BASE_URL}music-data/users/${response.userId}`);
+                
                 setPlaylist(response);
                 setUserPlaylist(userPlaylistApi);
-                setSongs(response.playlistSongs.map(ps => ps.song));
+                setSongs(response.songs);
                 if (userId === response.userId) {
                     setIsUserPlaylist(true);
                 }
