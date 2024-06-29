@@ -22,7 +22,7 @@ export default function AristCard({ artist }) {
             key={artist.id}
             transition="transform 0.2s"
             _hover={{ transform: "scale(1.05)" }}
-            as='Link'
+            as={Link}
             to={`/artists/${artist.id}`}
         >
             <Image src={artist.imgUrl?.length > 0 ? artist.imgUrl : UNKNOUWN_ARTIST_IMG} alt={artist.title} />

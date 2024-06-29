@@ -43,13 +43,14 @@ const NavLink = ({ to, name }) => {
             px={2}
             py={1}
             rounded={"md"}
-            _hover={{
-                textDecoration: "none",
-                bg: useColorModeValue("gray.200", "gray.700"),
-            }}
+            _hover={{ textDecoration: "none", bg: useColorModeValue("gray.200", "gray.700") }}
+            _focus={{ textDecoration: "none" }}
         >
-            <Link to={to}>
-                <Text fontFamily="Abolition">{name}</Text>
+            <Link to={to}
+                _activeLink={{ bg: useColorModeValue("gray.200", "gray.700") }}>
+                <Text fontWeight={"semibold"} lineHeight={"100%"} fontStyle="">
+                    {name}
+                </Text>
             </Link>
         </Box>
     );
@@ -65,6 +66,7 @@ export default function Simple() {
     const count_suggestions = 5;
     const [searchQuery, setSearchQuery] = useState("");
     const [suggestions, setSuggestions] = useState([]);
+    const [user, setUser] = useState(null);
     const navigate = useNavigate();
     const suggestionsRef = useRef();
 
@@ -96,7 +98,19 @@ export default function Simple() {
     };
 
     useEffect(() => {
-        document.addEventListener("mousedown", handleClickOutside);
+        const fetchUserData = async () => {
+            try {
+                const userData = await apiService('GET', `${BASE_URL}music-data/users`);
+                setUser(userData);
+                document.addEventListener("mousedown", handleClickOutside);
+
+            } catch (error) {
+                console.error('Failed to fetch user data:', error);
+            }
+        };
+
+        fetchUserData();
+
         return () => {
             document.removeEventListener("mousedown", handleClickOutside);
         };
@@ -141,7 +155,7 @@ export default function Simple() {
                                     cursor={"pointer"}
                                     minW={0}
                                 >
-                                    <Avatar size={"sm"} src={"https://100k-faces.glitch.me/random-image"} />
+                                    {user ? <Avatar size={"sm"} src={user.imgUrl} /> : <Avatar size={"sm"} />}
                                 </MenuButton>
                                 <MenuList>
                                     {LinksMenu.map((link) => (
@@ -205,6 +219,6 @@ export default function Simple() {
                 </Box>
             )}
         </>
-        
+
     );
 }

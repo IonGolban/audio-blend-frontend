@@ -19,6 +19,9 @@ import PlaylistPage from "./pages/PlaylistPage.jsx";
 import ProfilePage from "./pages/ProfilePage.jsx";
 import ProfileSettingsPage from "./pages/ProfileSettingsPage.jsx";
 import SearchPage from "./pages/SearchPage.jsx";
+import AddSongPage from "./pages/AddSongPage.jsx";
+import AddAlbumPage from "./pages/AddAlbumPage.jsx";
+import FeedPage from "./pages/FeedPage.jsx";
 
 export default function App() {
   const token = localStorage.getItem("token");
@@ -52,7 +55,7 @@ export default function App() {
     <ChakraProvider>
       <AudioPlayer src={"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"} />
       <Router>
-        <LibraryPanel />
+        <LibraryPanel/>
         <MainLayout>
           <NavBar />
 
@@ -68,6 +71,9 @@ export default function App() {
             <Route path="*" element={<h1>Not Found</h1>} />
             <Route path="/profile/settings" element={<ProfileSettingsPage />} />
             <Route path="/search"  element={<SearchPage />} />
+            <Route path="/add-album" element={<AddAlbumPage/>} />
+            <Route path="/add-song" element={<AddSongPage/>} />
+            <Route path="/feed" element={<FeedPage/>} />
           </Routes>
         </MainLayout>
       </Router>

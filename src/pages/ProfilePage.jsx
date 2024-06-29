@@ -47,6 +47,7 @@ const ProfilePage = () => {
         const fetchUserData = async () => {
             try {
                 const artist = await apiService('GET', `${BASE_URL}music-data/artists/user/isArtist`);
+                console.log('artist', artist);
                 if (artist) {
                     setArtistInfo(artist);
                     const artistSongs = await apiService('GET', `${BASE_URL}music-data/songs/artist/${artist.id}`);
@@ -87,19 +88,19 @@ const ProfilePage = () => {
     return (
         <Box px={4} py={6}>
             <Flex alignItems="center" mb={6}>
-                <Avatar size="2xl" src={user.imgUrl} />
+                <Avatar size="2xl" src={ isArtistMode ? artistInfo.imageUrl : user.imgUrl } />
                 <Box ml={4}>
                     <Heading as="h2" size="xl" variant={'outline'}>{user.username}</Heading>
                     <Text fontSize="lg">{user.bio}</Text>
                 </Box>
-                {!artistInfo && (
+                
                     <FormControl display="flex" alignItems="center" ml={6}>
                         <FormLabel htmlFor="artist-mode" mb="0">
                             Artist Mode
                         </FormLabel>
                         <Switch id="artist-mode" isChecked={isArtistMode} onChange={() => setIsArtistMode(!isArtistMode)} />
                     </FormControl>
-                )}
+              
             </Flex>
 
             {isArtistMode ? artistContent(artistInfo, songs, albums) : userContent(likedSongs, likedPlaylists, likedAlbums, playlists)}
@@ -108,6 +109,7 @@ const ProfilePage = () => {
                 <Box mt={10}>
                     <Heading as="h3" size="lg" mb={4}>Recommended Songs</Heading>
                     <FeedItems items={recommendedSongs} type="song" />
+
                 </Box>
             )}
         </Box>
@@ -124,17 +126,17 @@ const artistContent = (artist, songs, albums) => {
             <TabPanels>
                 <TabPanel>
                     <Heading as="h3" size="lg" mb={4}>Uploaded Songs</Heading>
-                    <SimpleGrid columns={[1, 2, 3]} spacing={4}>
+                    <Flex>
                         <AddItemCard type="song" />
                         <FeedItems items={songs} type="song" />
-                    </SimpleGrid>
+                    </Flex>
                 </TabPanel>
                 <TabPanel>
                     <Heading as="h3" size="lg" mb={4}>Uploaded Albums</Heading>
-                    <SimpleGrid columns={[1, 2, 3]} spacing={4}>
+                    <Flex>
                         <AddItemCard type="album" />
                         <FeedItems items={albums} type="album" />
-                    </SimpleGrid>
+                    </Flex>
                 </TabPanel>
             </TabPanels>
         </Tabs>

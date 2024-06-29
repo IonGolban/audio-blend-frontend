@@ -6,6 +6,7 @@ import apiService from '../utils/ApiService.js';
 import { BASE_URL } from '../utils/Constants.js';
 import AuthStore from '../stores/AuthStore.js';
 import UpdatePasswordModal from '../components/UpdatePasswordModal.jsx';
+import ArtistSettingsModal from '../components/ArtistSettingsModal.jsx';
 
 const ProfileSettingsPage = () => {
     const [user, setUser] = useState(null);
@@ -16,6 +17,7 @@ const ProfileSettingsPage = () => {
     const navigate = useNavigate();
     const isAuth = AuthStore.useState(s => s.isAuth);
     const [isUpdatePasswordModalOpen, setIsUpdatePasswordModalOpen] = useState(false);
+    const [isArtistSettingsModalOpen, setIsArtistSettingsModalOpen] = useState(false);
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -129,8 +131,11 @@ const ProfileSettingsPage = () => {
                     <Heading as="h2" size="xl">{user.username}</Heading>
                     <Text fontSize="lg">{user.bio}</Text>
                 </Box>
+                
             </Flex>
+            
             <VStack spacing={4} align="stretch">
+
                 <FormControl>
                     <Flex>
                         <FormLabel htmlFor="username" mb="0" flex="1">
@@ -225,9 +230,15 @@ const ProfileSettingsPage = () => {
                         </Button>
                     </Flex>
                 </FormControl>
-            </VStack>
+                <Button fontSize='sm' onClick={()=>{setIsArtistSettingsModalOpen(true)}} variant={'ghost'} backgroundColor={'gray.100'} color={"gray.700"}>                        
+                        Artist Settings
+                </Button>            
 
-            <UpdatePasswordModal
+            </VStack>
+            {isArtistSettingsModalOpen && <ArtistSettingsModal
+                    isOpen={isArtistSettingsModalOpen}
+                    onClose={() => setIsArtistSettingsModalOpen(false)}/>
+            }<UpdatePasswordModal
                 isOpen={isUpdatePasswordModalOpen}
                 onClose={() => setIsUpdatePasswordModalOpen(false)}
             />

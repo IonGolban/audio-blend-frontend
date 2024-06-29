@@ -42,11 +42,11 @@ const SearchPage = () => {
                 setSongs(data.songs);
                 setUsers(users);
 
-                console.log("Search results:", data.albums);
-                console.log("Search results:", data.artists);
-                console.log("Search results:", data.songs);
-                console.log("Search results:", users);
-
+                console.log("Search albums:", albums);
+                console.log("Search artists:", artists);
+                console.log("Search songs:", songs);
+                console.log("Search users:", users);
+                
 
 
                 console.log("Search results:", );

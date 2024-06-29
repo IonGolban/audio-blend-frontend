@@ -3,11 +3,11 @@ import { useEffect, useState } from "react";
 import { BASE_URL } from "../utils/Constants.js";
 import apiService from "../utils/ApiService.js";
 import { msToHumanReadable } from "../utils/UtilsHelper.js";
-
+import AuthStore from "../stores/AuthStore.js";
 export default function MainPage() {
 
   const [topSongs, setTopSongs] = useState([]);
-
+  const isAuth = AuthStore.useState((   s) => s.isAuth);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -34,12 +34,12 @@ export default function MainPage() {
           <Text color="gray.500" fontSize={{ base: "md", md: "xl" }}>
             Explore a vast library of albums, curated playlists, and personalized recommendations.
           </Text>
-          <Flex direction={{ base: "column", sm: "row" }} gap={2}>
-            <Button size="lg">Explore</Button>
+          {!isAuth && <Flex direction={{ base: "column", sm: "row" }} gap={2}>
+            <Button size="lg">Sign In</Button>
             <Button size="lg" variant="outline">
               Sign Up
             </Button>
-          </Flex>
+          </Flex>}
         </Flex>
         <Box position="relative">
           <Image
