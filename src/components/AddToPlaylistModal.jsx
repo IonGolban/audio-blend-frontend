@@ -40,7 +40,6 @@ const AddToPlaylistModal = ({ isOpen, onClose, songId }) => {
     const handleAddToPlaylist = async () => {
         try {
 
-            console.log("Adding to playlist", selectedPlaylist);
             const data = {
                 songId: songId,
                 playlistId: selectedPlaylist
@@ -72,6 +71,10 @@ const AddToPlaylistModal = ({ isOpen, onClose, songId }) => {
                                     variant={selectedPlaylist === playlist.id ? 'solid' : 'outline'}
                                     colorScheme={'gray'}
                                     justifyContent='left'
+                                    textAlign='left'  
+                                    whiteSpace='nowrap' 
+                                    overflow='hidden'  
+                                    textOverflow='ellipsis' 
                                 >
                                     {playlist.title}
                                 </Button>

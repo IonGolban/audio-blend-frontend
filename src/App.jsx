@@ -29,7 +29,6 @@ export default function App() {
 
   useEffect(() => {
     checkAuth(token).then(({ isAuth, username, id }) => {
-      console.log("id from response", id);
 
       if (isAuth) {
         AuthStore.update((s) => {
@@ -41,23 +40,20 @@ export default function App() {
 
 
         setAuthToken(token);
-        console.log("User is authenticated");
         // window.location.href = "/dashboard";
       }
     });
   }, [isAuth]);
 
-  console.log(isAuth);
   const showPanel = true;
-  // console.log(showPanel)
 
   return (
     <ChakraProvider>
-      <AudioPlayer src={"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"} />
+      {isAuth && <AudioPlayer src={"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"} />}
       <Router>
-        <LibraryPanel/>
+      {isAuth && <LibraryPanel/>}
         <MainLayout>
-          <NavBar />
+        {isAuth && <NavBar />}
 
           <Routes>
             <Route path="/" element={<MainPage />} />

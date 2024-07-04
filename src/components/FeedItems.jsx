@@ -21,6 +21,10 @@ const FeedItems = ({ items,type }) => {
     }
   };
 
+  if(type === "artist"){
+    console.log("artist items",items);
+  }
+
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentItems = items.slice(startIndex, startIndex + itemsPerPage);
 

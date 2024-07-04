@@ -22,6 +22,7 @@ const ArtistPage = () => {
     const [songs, setSongs] = useState([]);
     const [isFollowing, setIsFollowing] = useState(false);
     const isAuth = AuthStore.useState(s => s.isAuth);
+    const [nr_followers, setNrFollowers] = useState(0);
     useEffect(() => {
         const fetchArtistData = async () => {
             try {
@@ -36,6 +37,7 @@ const ArtistPage = () => {
                 }
                 
                 setArtist(artistData);
+                setNrFollowers(artistData.followers);
                 setSongs(topSongsData);
                 setAlbums(albumsData);
 
@@ -59,7 +61,15 @@ const ArtistPage = () => {
 
             await apiService('POST', url);
 
+            if(isFollowing){
+                setNrFollowers(nr_followers-1);
+            }
+            else{
+                setNrFollowers(nr_followers+1);
+            }
+
             setIsFollowing(!isFollowing);
+            
         } catch (error) {
             console.error("Failed to toggle follow status", error);
         }
@@ -72,12 +82,12 @@ const ArtistPage = () => {
     return (
         <Box px={4} py={6}>
             <Flex alignItems="center" mb={6}>
-                <Avatar size="2xl" src={artist.imgUrl} />
+                <Avatar size="2xl" src={artist.imageUrl} />
                 <Box ml={4}>
                     <Heading as="h2" size="xl">{artist.name}</Heading>
                     <Text fontSize="lg">{artist.genres.map(g => g.name).join(', ')}</Text>
                     <Text mt={2}>{artist.description}</Text>
-                    <Text mt={2} fontSize={"sm"}>{artist.followers} followers</Text>
+                    <Text mt={2} fontSize={"sm"}>{nr_followers} followers</Text>
                     <Button
                         mt={4}
                         onClick={handleFollowToggle}

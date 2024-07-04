@@ -140,7 +140,7 @@ const ArtistSettingsModal = ({ isOpen, onClose }) => {
                 <ModalBody>
                     <Box px={4} py={6} maxW="500px" mx="auto">
                         <Box textAlign="center">
-                            <Avatar size="2xl" src={artist.imageUrl} />
+                            <Avatar size="2xl" src={artist.imageUrl ? artist.imageUrl  : artist.imgUrl  } />
                             <Heading as="h2" size="xl" mt={4}>{artist.name}</Heading>
                         </Box>
                         <FormControl mt={6}>

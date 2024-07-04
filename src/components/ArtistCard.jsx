@@ -9,8 +9,7 @@ export default function AristCard({ artist }) {
     const bgColor = useColorModeValue("white", "gray.800");
     const borderColor = useColorModeValue("gray.200", "gray.700");
     const UNKNOUWN_ARTIST_IMG = "https://thumbs.dreamstime.com/b/default-avatar-profile-flat-icon-social-media-user-vector-portrait-unknown-human-image-default-avatar-profile-flat-icon-184330869.jpg";
-    console.log("artistcard", artist);
-    return (
+        return (
         <Box
             bg={bgColor}
             maxW="sm"
@@ -23,7 +22,7 @@ export default function AristCard({ artist }) {
             transition="transform 0.2s"
             _hover={{ transform: "scale(1.05)" }}
             as={Link}
-            to={`/artists/${artist.id}`}
+            to={`/artist/${artist.id}`}
         >
             <Image src={artist.imgUrl?.length > 0 ? artist.imgUrl : UNKNOUWN_ARTIST_IMG} alt={artist.title} />
 

@@ -33,7 +33,7 @@ export default function PlaylistPage({ children }) {
                 setPlaylist(response);
                 setUserPlaylist(userPlaylistApi);
                 setSongs(response.songs);
-                if (userId === response.userId) {
+                if (userId === userPlaylistApi.id) {
                     setIsUserPlaylist(true);
                 }
             } catch (error) {

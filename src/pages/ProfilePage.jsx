@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Text, Heading, SimpleGrid, Avatar, Flex, Button, Tabs, TabList, TabPanels, Tab, TabPanel, Switch, FormControl, FormLabel } from '@chakra-ui/react';
+import { Spinner, Box, Text, Heading, SimpleGrid, Avatar, Flex, Button, Tabs, TabList, TabPanels, Tab, TabPanel, Switch, FormControl, FormLabel } from '@chakra-ui/react';
 import { Link, useParams } from 'react-router-dom';
 import apiService from '../utils/ApiService.js';
 import { BASE_URL } from '../utils/Constants.js';
@@ -16,9 +16,10 @@ const ProfilePage = () => {
     const [albums, setAlbums] = useState([]);
     const [songs, setSongs] = useState([]);
     const [likedAlbums, setLikedAlbums] = useState([]);
+    const [followedArtists, setFollowedArtists] = useState([]);
     const [recommendedSongs, setRecommendedSongs] = useState([]);
     const [isArtistMode, setIsArtistMode] = useState(false);
-
+    const [tabIndex, setTabIndex] = useState(0)
 
     const isAuth = AuthStore.useState(s => s.isAuth);
 
@@ -47,31 +48,34 @@ const ProfilePage = () => {
         const fetchUserData = async () => {
             try {
                 const artist = await apiService('GET', `${BASE_URL}music-data/artists/user/isArtist`);
-                console.log('artist', artist);
                 if (artist) {
                     setArtistInfo(artist);
-                    const artistSongs = await apiService('GET', `${BASE_URL}music-data/songs/artist/${artist.id}`);
-                    const artistAlbums = await apiService('GET', `${BASE_URL}music-data/albums/artist/${artist.id}`);
+                    const artistSongsreq =  apiService('GET', `${BASE_URL}music-data/songs/artist/${artist.id}`);
+                    const artistAlbumsreq =  apiService('GET', `${BASE_URL}music-data/albums/artist/${artist.id}`);
+                    const [artistSongs, artistAlbums] = await Promise.all([artistSongsreq, artistAlbumsreq]);
                     setSongs(artistSongs);
                     setAlbums(artistAlbums);
                 }
 
-                const userData = await apiService('GET', `${BASE_URL}music-data/users`);
-                const likedSongs = await apiService('GET', `${BASE_URL}music-data/songs/liked`);
-                const userPlaylists = await apiService('GET', `${BASE_URL}music-data/playlists/user`);
-                const likedPlaylists = await apiService('GET', `${BASE_URL}music-data/playlists/liked`);
-                const likedAlbums = await apiService('GET', `${BASE_URL}music-data/albums/liked`);
-                const recommendedSongs = await apiService('GET', `${BASE_URL}music-data/songs/auth/random`, null, { count: 50 });
+                const userDatareq =  apiService('GET', `${BASE_URL}music-data/users`);
+                const likedSongsreq =  apiService('GET', `${BASE_URL}music-data/songs/liked`);
+                const userPlaylistsreq =  apiService('GET', `${BASE_URL}music-data/playlists/user`);
+                const likedPlaylistsreq =  apiService('GET', `${BASE_URL}music-data/playlists/liked`);
+                const likedAlbumsreq =  apiService('GET', `${BASE_URL}music-data/albums/liked`);
+                const artistsFollowedreq =  apiService('GET', `${BASE_URL}music-data/artists/followed/user`);
+                const recommendedSongsreq =  apiService('GET', `${BASE_URL}music-data/songs/auth/random`, null, { count: 50 });
+
+                const [userData, likedSongs, userPlaylists, likedPlaylists, likedAlbums, artistsFollowed, recommendedSongs] = await Promise.all([userDatareq, likedSongsreq, userPlaylistsreq, likedPlaylistsreq, likedAlbumsreq, artistsFollowedreq, recommendedSongsreq]);
 
                 setLikedSongs(likedSongs);
                 setPlaylists(userPlaylists);
                 setLikedPlaylists(likedPlaylists);
                 setLikedAlbums(likedAlbums);
+                setFollowedArtists(artistsFollowed);
                 setRecommendedSongs(recommendedSongs);
 
                 setUser(userData);
 
-                console.log('likedPlaylists', likedPlaylists);
 
             } catch (error) {
                 console.error('Failed to fetch user data:', error);
@@ -82,28 +86,32 @@ const ProfilePage = () => {
     }, []);
 
     if (!user) {
-        return <Box>Loading...</Box>;
+        return (<Flex justifyContent="center" alignItems="center" height="100vh">
+            <Spinner size="xl" />
+        </Flex>);
     }
+
+    console.log(tabIndex);
 
     return (
         <Box px={4} py={6}>
             <Flex alignItems="center" mb={6}>
-                <Avatar size="2xl" src={ isArtistMode ? artistInfo.imageUrl : user.imgUrl } />
+                <Avatar size="2xl" src={isArtistMode ? artistInfo.imageUrl : user.imgUrl} />
                 <Box ml={4}>
-                    <Heading as="h2" size="xl" variant={'outline'}>{user.username}</Heading>
+                    <Heading as="h2" size="xl" variant={'outline'}>{isArtistMode ? artistInfo.name : user.username}</Heading>
                     <Text fontSize="lg">{user.bio}</Text>
                 </Box>
-                
-                    <FormControl display="flex" alignItems="center" ml={6}>
-                        <FormLabel htmlFor="artist-mode" mb="0">
-                            Artist Mode
-                        </FormLabel>
-                        <Switch id="artist-mode" isChecked={isArtistMode} onChange={() => setIsArtistMode(!isArtistMode)} />
-                    </FormControl>
-              
+
+                <FormControl display="flex" alignItems="center" ml={6}>
+                    <FormLabel htmlFor="artist-mode" mb="0">
+                        Artist Mode
+                    </FormLabel>
+                    <Switch id="artist-mode" isChecked={isArtistMode} onChange={() => setIsArtistMode(!isArtistMode)} />
+                </FormControl>
+
             </Flex>
 
-            {isArtistMode ? artistContent(artistInfo, songs, albums) : userContent(likedSongs, likedPlaylists, likedAlbums, playlists)}
+            {isArtistMode ? artistContent(artistInfo, songs, albums) : userContent(likedSongs, likedPlaylists, likedAlbums, playlists, followedArtists)}
 
             {!isArtistMode && (
                 <Box mt={10}>
@@ -143,14 +151,15 @@ const artistContent = (artist, songs, albums) => {
     );
 };
 
-const userContent = (likedSongs, likedPlaylists, likedAlbums, playlists) => {
+const userContent = (likedSongs, likedPlaylists, likedAlbums, playlists, followedArtists) => {
     return (
-        <Tabs variant="soft-rounded" colorScheme="teal">
+        <Tabs onChange={(index) => setTabIndex(index)} variant="soft-rounded" colorScheme="teal">
             <TabList>
                 <Tab>Liked Songs</Tab>
                 <Tab>Liked Playlists</Tab>
                 <Tab>Liked Albums</Tab>
                 <Tab>Playlists</Tab>
+                <Tab>Followed Artists</Tab>
             </TabList>
             <TabPanels>
                 <TabPanel>
@@ -168,6 +177,10 @@ const userContent = (likedSongs, likedPlaylists, likedAlbums, playlists) => {
                 <TabPanel>
                     <Heading as="h3" size="lg" mb={4}>Playlists</Heading>
                     <FeedItems items={playlists} type="playlist" />
+                </TabPanel>
+                <TabPanel>
+                    <Heading as="h3" size="lg" mb={4}>Followed Artists</Heading>
+                    <FeedItems items={followedArtists} type="artist" />
                 </TabPanel>
             </TabPanels>
         </Tabs>

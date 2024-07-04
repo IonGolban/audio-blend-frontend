@@ -5,7 +5,6 @@ export default function UserCard({ user }) {
     const bgColor = useColorModeValue("white", "gray.800");
     const borderColor = useColorModeValue("gray.200", "gray.700");
 
-    console.log("usercard", user);
 
     return (
         <Box

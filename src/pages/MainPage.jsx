@@ -1,9 +1,11 @@
-import { Box, Button, Flex, Heading, Image, Link, Text, SimpleGrid, Card, CardHeader, CardBody, CardFooter } from "@chakra-ui/react";
+import { Box, Button, Flex, Heading, Image, Text, SimpleGrid, Card, CardHeader, CardBody, CardFooter } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { BASE_URL } from "../utils/Constants.js";
 import apiService from "../utils/ApiService.js";
 import { msToHumanReadable } from "../utils/UtilsHelper.js";
 import AuthStore from "../stores/AuthStore.js";
+import { Link} from "react-router-dom";
+import { PiSmileySad } from "react-icons/pi";
 export default function MainPage() {
 
   const [topSongs, setTopSongs] = useState([]);
@@ -11,7 +13,7 @@ export default function MainPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await apiService('GET', `${BASE_URL}music-data/songs/top/10`);
+        const response = await apiService('GET', `${BASE_URL}music-data/songs/top/14`);
         setTopSongs(response);
         console.log(response);
       } catch (error) {
@@ -35,8 +37,8 @@ export default function MainPage() {
             Explore a vast library of albums, curated playlists, and personalized recommendations.
           </Text>
           {!isAuth && <Flex direction={{ base: "column", sm: "row" }} gap={2}>
-            <Button size="lg">Sign In</Button>
-            <Button size="lg" variant="outline">
+            <Button as = {Link} to = "/login" size="lg">Sign In</Button>
+            <Button as = {Link} to = "/register" size="lg" variant="outline">
               Sign Up
             </Button>
           </Flex>}
@@ -54,8 +56,13 @@ export default function MainPage() {
         </Box>
       </SimpleGrid>
 
+    
 
       <Box as="section" px={{ base: 4, md: 8, lg: 16 }} mt={12}>
+        { !isAuth && <Flex>
+          <PiSmileySad size={30} />
+          <Text color="gray.500" fontSize={{ base: "md", md: "xl" }}>You must authorize to listen to these tracks</Text>
+        </Flex>}
         <SimpleGrid spacing={4} templateColumns='repeat(auto-fill, minmax(200px, 1fr))'>
           {topSongs.map(song => (
             <Card
@@ -124,7 +131,7 @@ export default function MainPage() {
                     textOverflow="ellipsis"
                     maxWidth="200px"
                   >
-                    {song.genres.join(', ')}
+                    {song.genres.map(g=>g.name).join(', ')}
                   </Text>
                   <Text
                     fontSize='12'

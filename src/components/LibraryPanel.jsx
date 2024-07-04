@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link  } from "react-router-dom";
 import axios from "axios";
 import { BASE_URL } from "../utils/Constants.js";
 import { useStoreState } from "pullstate";
@@ -28,7 +28,7 @@ import {
     FiSettings,
     FiMenu, 
 } from "react-icons/fi";
-import { FaMusic, FaPlay, FaRandom, FaPlus } from "react-icons/fa";
+import { FaMusic, FaPlay, FaRandom, FaPlus, FaArrowLeft   } from "react-icons/fa";
 import CreatePlaylist from "./CreatePlaylist.jsx";
 import apiSerivce from "../utils/ApiService.js";
 
@@ -53,6 +53,7 @@ export default function SimpleSidebar({ children }) {
     const [albums, setAlbums] = useState([]);
     const [playlists, setPlaylists] = useState([]);
     const [randomItems, setRandomItems] = useState([]);
+    const [artists, setArtists] = useState([]);
     const navigate = useNavigate();
     const isAuth = useStoreState(AuthStore, s => s.isAuth);
     useEffect(() => {
@@ -60,23 +61,23 @@ export default function SimpleSidebar({ children }) {
             try {
                 let albums_url = "";
                 let playlists_url = "";
-                if (!isAuth) {
-                    albums_url = `${BASE_URL}music-data/albums`;
-                    playlists_url = `${BASE_URL}music-data/playlists`;
-                }else{
-                    albums_url = `${BASE_URL}music-data/albums`;
-                    playlists_url = `${BASE_URL}music-data/playlists/user`;
-                }
+                let artists_url = "";
+                albums_url = `${BASE_URL}music-data/albums/liked`;
+                playlists_url = `${BASE_URL}music-data/playlists/liked`;
+                artists_url = `${BASE_URL}music-data/artists/followed/user`;
+                
                 const albumResponse = await axios.get(`${albums_url}`);
                 setAlbums(albumResponse.data);
 
                 const playlistResponse = await axios.get(`${playlists_url}`);
                 setPlaylists(playlistResponse.data);
 
+                const artistsResponse = await axios.get(`${artists_url}`);
+                console.log(artistsResponse.data);
+                setArtists(artistsResponse.data);
                 // const randomResponse = await axios.get(`${BASE_URL}music-data/random`);
                 // setRandomItems(randomResponse.data);
 
-                console.log(albumResponse.data);
                 // console.log(playlistResponse.data);
                 // console.log(randomResponse.data);
             } catch (error) {
@@ -94,7 +95,7 @@ export default function SimpleSidebar({ children }) {
         <>
             {show && (
                 <>
-                    <SidebarContent onClose={onLeftClose} albums={albums} playlists={playlists} randomItems={randomItems} goto={goto} display={{ base: "none", md: "block" }} />
+                    <SidebarContent onClose={onLeftClose} artists={artists} albums={albums} playlists={playlists} randomItems={randomItems} goto={goto} display={{ base: "none", md: "block" }} />
                     <Drawer
                         autoFocus={false}
                         isOpen={isLeftOpen}
@@ -129,7 +130,7 @@ export default function SimpleSidebar({ children }) {
     );
 }
 
-const SidebarContent = ({ isAuth, onClose, albums, playlists, randomItems, goto, ...rest }) => {
+const SidebarContent = ({ isAuth, onClose, albums, playlists,artists, randomItems, goto, ...rest }) => {
     const [isPlaylistModalOpen, setPlaylistModalOpen] = useState(false);
     return (
         <Box
@@ -156,8 +157,16 @@ const SidebarContent = ({ isAuth, onClose, albums, playlists, randomItems, goto,
             <VStack spacing={4} mt={4}>
                 <Section title="Albums" items={albums} icon={FaMusic} goto={goto}/>
                 <Section title="Playlists" items={playlists} icon={FaPlay} goto={goto} />
-                <Section title="Random" items={randomItems} icon={FaRandom} goto={goto} />
-                
+                <Box w="full" px="4">
+                <Text fontSize="xl" mt="4" mb="2">Artists</Text>
+                {artists.map((item) => (
+                    <Link to={`/artist/${item.id}`} key={item.id} style={{ textDecoration: "none" }}>
+                        <NavItem key = {item.id} icon={FaRandom} img_url ={item.imgUrl} fontSize="sm">
+                            {item.name}
+                        </NavItem>
+                    </Link>
+                ))}
+    </Box>
             </VStack>
         <CreatePlaylist isOpen={isPlaylistModalOpen} onClose={()=>setPlaylistModalOpen(false)} />
 

@@ -22,11 +22,12 @@ import { BASE_URL } from '../utils/Constants.js';
 import AuthStore from '../stores/AuthStore.js';
 import AddToPlaylistModal from './AddToPlaylistModal.jsx';
 
-export default function SongList({ setItems,items, listId, type, isUserPlaylist }) {
+export default function SongList({ setItems, items, listId, type, isUserPlaylist }) {
     const [likedSongs, setLikedSongs] = useState([]);
     const isAuth = AuthStore.useState(s => s.isAuth);
     const [isAddToPlaylistOpen, setIsAddToPlaylistOpen] = useState(false);
     const [selectedSongId, setSelectedSongId] = useState(null);
+
     useEffect(() => {
         const fetchLikedSongs = async () => {
             let url = type === 'album' ? `${BASE_URL}music-data/likes/songs/album/${listId}` : `${BASE_URL}music-data/likes/songs/playlist/${listId}`;
@@ -77,7 +78,6 @@ export default function SongList({ setItems,items, listId, type, isUserPlaylist 
             playlistId: listId
         }
         const response = await apiService("DELETE", `${BASE_URL}music-data/playlist-songs`, body);
-        console.log("response : ",response);
         if (response) {
             const newItems = items.filter(item => item.id !== songId);
             setItems(newItems);
@@ -96,7 +96,6 @@ export default function SongList({ setItems,items, listId, type, isUserPlaylist 
                         <Th>Duration</Th>
                         <Th>Artist</Th>
                         <Th>Genre</Th>
-                        <Th>Popularity</Th>
                         <Th>Actions</Th>
                     </Tr>
                 </Thead>
@@ -122,15 +121,13 @@ export default function SongList({ setItems,items, listId, type, isUserPlaylist 
                             <Td>{msToHumanReadable(item.duration)}</Td>
                             <Td>{item.artistName}</Td>
                             <Td>{item.genres.map(g => g.name).join(", ")}</Td>
-                            <Td>{item.popularity ? item.popularity : "0"}</Td>
                             <Td>
                                 <Menu>
-                                    <MenuButton as={Button} rightIcon={<FaList />} variant='ghost' />
-                                    <MenuList>
+                                    <MenuButton as={Button} rightIcon={<FaList />} />
+                                    <MenuList minW="200px" maxH="200px" zIndex={100}>
                                         <MenuItem onClick={() => handleAddToQueue(item)}>Add to Queue</MenuItem>
                                         <MenuItem onClick={() => handleAddToPlaylistClick(item.id)}>Add to Playlist</MenuItem>
                                         {isUserPlaylist && <MenuItem onClick={() => handleRemoveFromPlaylist(item.id)}>Delete</MenuItem>}
-                                        <MenuItem>Share</MenuItem>
                                     </MenuList>
                                 </Menu>
                             </Td>

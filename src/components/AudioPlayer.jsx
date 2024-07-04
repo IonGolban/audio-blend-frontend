@@ -38,7 +38,10 @@ const AudioPlayer = ({ src }) => {
 
     useEffect(() => {
         if (currentSong) {
-            audioRef.current.src = currentSong;
+            if (audioRef.current.src !== currentSong) {
+                audioRef.current.src = currentSong;
+            }
+
             if (isPlaying) {
                 audioRef.current.play();
             } else {
@@ -47,8 +50,20 @@ const AudioPlayer = ({ src }) => {
         }
     }, [currentSong, isPlaying]);
 
+    useEffect(() => {
+        const audio = audioRef.current;
+        const handleEnded = () => {
+            skipSong();
+        };
+
+        audio.addEventListener('ended', handleEnded);
+
+        return () => {
+            audio.removeEventListener('ended', handleEnded);
+        };
+    }, [queue]);
+
     const togglePlay = () => {
-        console.log(queue)
         if (isPlaying) {
             audioRef.current.pause();
         } else {
@@ -87,19 +102,15 @@ const AudioPlayer = ({ src }) => {
     };
 
     const skipSong = () => {
-        console.log("skip song  ")
         const [nextSong, ...newQueue] = queue;
-        console.log(queue)
-        console.log("next song", nextSong)
         if (nextSong) {
-
             MusicStore.update(s => {
                 s.currentSong = nextSong.audioUrl;
                 s.queue = newQueue;
                 s.duration = 0;
                 s.songInfo = nextSong;
+                s.currentTime = 0;
             });
-
         }
     };
 
@@ -128,7 +139,7 @@ const AudioPlayer = ({ src }) => {
                     <Image src={`${songInfo.coverUrl ? songInfo.coverUrl : "https://www.teachhub.com/wp-content/uploads/2019/10/Our-Top-10-Songs-About-School.png"}`} boxSize="50px" objectFit="cover" alt="Song cover" />
                     <Stack ml={4} spacing={0}>
                         <Heading as="h2" size="sm" fontSize="16px" isTruncated maxWidth="200px" >{`${songInfo.title ? songInfo.title : 'AudioBlend'}`}</Heading>
-                        <Text color="gray.500" fontSize="14px" isTruncated maxWidth="200px">{`${songInfo.artist?.name ? songInfo.artist.name : (songInfo.artistName ?songInfo.artistName :  'AudioBlend')}`}</Text>
+                        <Text color="gray.500" fontSize="14px" isTruncated maxWidth="200px">{`${songInfo.artist?.name ? songInfo.artist.name : (songInfo.artistName ? songInfo.artistName : 'AudioBlend')}`}</Text>
                     </Stack>
                 </Flex>
             </Box>
@@ -143,7 +154,7 @@ const AudioPlayer = ({ src }) => {
                         {isPlaying ? <FaPause /> : <FaPlay />}
                     </Button>
                     <IconButton onClick={() => skipTime(10)} icon={<FaRedo />} mr={2} aria-label="Forward 10 seconds" />
-                    <IconButton onClick={() =>skipSong()} icon={<FaForward />} mr={2} aria-label="Skip Song" />
+                    <IconButton onClick={skipSong} icon={<FaForward />} mr={2} aria-label="Skip Song" />
                     <Slider
                         aria-label="audio progress"
                         flex="1"
@@ -160,7 +171,7 @@ const AudioPlayer = ({ src }) => {
             </Box>
             <Box width="20%" textAlign="right" pr='10' pl='10'>
                 <Flex align="center" justifyContent="space-between">
-                    <Tooltip label="Volume" >
+                    <Tooltip label="Volume">
                         <Slider
                             aria-label="Volume"
                             flex="1"
@@ -184,13 +195,26 @@ const AudioPlayer = ({ src }) => {
                         <MenuButton as={Button}>
                             Q
                         </MenuButton>
-                        {queue.length > 0 && <MenuList>
-                            {queue.map((song, index) => (
-                                <MenuItem key={index} onClick={() => removeSongFromQueue(index)}>
-                                    {song.title} <IconButton icon={<FaTrash />} aria-label="Remove" ml={2} />
-                                </MenuItem>
-                            ))}
-                        </MenuList>}
+                        {queue.length > 0 && (
+                            <MenuList>
+                                {queue.map((song, index) => (
+                                    <MenuItem key={index} onClick={() => removeSongFromQueue(index)}>
+                                        <Flex justify="space-between" align="center" width="100%">
+                                            {song.title}
+                                            <IconButton
+                                                icon={<FaTrash />}
+                                                aria-label="Remove"
+                                                ml={2}
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    removeSongFromQueue(index);
+                                                }}
+                                            />
+                                        </Flex>
+                                    </MenuItem>
+                                ))}
+                            </MenuList>
+                        )}
                     </Menu>
                 </Flex>
             </Box>

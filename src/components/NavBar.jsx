@@ -34,7 +34,7 @@ import { GoPerson } from "react-icons/go";
 import { playSong } from "../utils/AudioHelper.js";
 
 
-const Links = [{ name: "Home", link: "/home" }, { name: "Feed", link: "/feed" }, { name: "Library", link: "/library" }];
+const Links = [{ name: "Recommendations", link: "/home" }, { name: "Discover", link: "/feed" }];
 
 const NavLink = ({ to, name }) => {
     return (

@@ -8,6 +8,7 @@ import apiService from "../utils/ApiService.js";
 import { format, parseISO } from 'date-fns';
 import AuthStore from "../stores/AuthStore.js";
 import { FaList, FaHeart, FaRegHeart } from 'react-icons/fa';
+import { Link } from "react-router-dom";
 
 export default function AlbumPage({ children }) {
     const { albumid } = useParams();
@@ -25,7 +26,6 @@ export default function AlbumPage({ children }) {
                     setLikedAlbum(likedAlbum?true:false);
                 }
                 setAlbum(response);
-                console.log(response);
             } catch (error) {
                 console.error("Error fetching albums:", error);
                 setError(error);
@@ -50,7 +50,6 @@ export default function AlbumPage({ children }) {
         );
     }
     const handleToggleLike = async (item) => {
-        console.log("likedAlbum", likedAlbum);
         if (!likedAlbum) {
             const response = await apiService("POST", `${BASE_URL}music-data/likes/add/album/${item.id}`);
             console.log(response);
@@ -68,7 +67,7 @@ export default function AlbumPage({ children }) {
                 <Image src={album.coverUrl} alt={album.title} borderRadius="full" boxSize="150px" mb={{ base: 4, md: 0 }} mr={{ md: 8 }} />
                 <Box textAlign={{ base: "center", md: "left" }}>
                     <Text fontSize="4xl" fontWeight="bold" mb={2}>{album.title}</Text>
-                    <Text fontSize="2xl" color="gray.600" mb={2}>{album.artistName}</Text>
+                    <Text fontSize="2xl" color="gray.600" mb={2} as={Link} to={`/artist/${album.artistId}`} >{album.artistName}</Text>
                     <Text fontSize="lg" color="gray.500">Released on: {format(parseISO(album.releaseDate), 'PP')}</Text>
 
                     {isAuth && <IconButton

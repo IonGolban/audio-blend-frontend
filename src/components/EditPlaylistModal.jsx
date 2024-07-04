@@ -57,6 +57,27 @@ export default function EditPlaylistModal({ isOpen, onClose, playlist, onUpdate 
         }
     };
 
+    const deletePlaylist = async () => {
+        try {
+            const response = await fetch(`https://localhost:7195/api/v1/music-data/playlists/${playlist.id}`, {
+                method: 'DELETE',
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                },
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                console.log('Playlist deleted:', data);
+                navigate(-1);
+            } else {
+                console.error('Failed to delete playlist:', response.statusText);
+            }
+        } catch (error) {
+            console.error('Error deleting playlist:', error);
+        }
+    }
+
 
     return (
         <Modal isOpen={isOpen} onClose={onClose}>
@@ -108,6 +129,7 @@ export default function EditPlaylistModal({ isOpen, onClose, playlist, onUpdate 
                         Save
                     </Button>
                     <Button variant="ghost" onClick={onClose}>Cancel</Button>
+                    <Button variant={'ghost'} color = {'red'} onClick={()=>deletePlaylist()}>Delete</Button>
                 </ModalFooter>
             </ModalContent>
         </Modal>

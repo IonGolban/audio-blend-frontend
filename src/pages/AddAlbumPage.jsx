@@ -22,6 +22,7 @@ import { AiOutlinePlus } from 'react-icons/ai';
 import Select from 'react-select';
 import apiService from '../utils/ApiService';
 import { BASE_URL } from '../utils/Constants';
+import { GiToaster } from 'react-icons/gi';
 
 const AddAlbumPage = () => {
     const navigate = useNavigate();
@@ -100,10 +101,11 @@ const AddAlbumPage = () => {
             if (response.ok) {
                 const data = await response.json();
                 console.log('Album created:', data);
-                
+                navigate(-1);
                 return data;
             } else {
                 console.error('Failed to create album:', response.statusText);
+                
             }
         } catch (error) {
             console.error('Error creating album:', error);

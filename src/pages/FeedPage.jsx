@@ -65,9 +65,11 @@ export default function FeedPage() {
         let path_albums = `${BASE_URL}music-data/albums/genres`;
         let path_artists = `${BASE_URL}music-data/artists/genres`;
 
-        const response_albums = await apiService('POST', path_albums, { GenresIds: genreIds }, { count: 150 });
-        const response_songs = await apiService('POST', path_songs, { GenresIds: genreIds }, { count: 150 });
-        const response_artists = await apiService('POST', path_artists, { GenresIds: genreIds }, { count: 150 });
+        const response_albums_req =  apiService('POST', path_albums, { GenresIds: genreIds }, { count: 100 });
+        const response_songs_req =  apiService('POST', path_songs, { GenresIds: genreIds }, { count: 100 });
+        const response_artists_req=  apiService('POST', path_artists, { GenresIds: genreIds }, { count: 20 });
+
+        const [response_albums, response_songs, response_artists] = await Promise.all([response_albums_req, response_songs_req, response_artists_req]);
 
         console.log("Fetched albums:", response_albums);
         console.log("Fetched songs:", response_songs);
@@ -84,8 +86,12 @@ export default function FeedPage() {
         } else {
             throw new Error("Invalid songs response structure");
         }
+        console.log("Artists:ss", response_artists);
 
+        console.log("Shuffled artists:", shuffle(response_artists));
         if (response_artists) {
+
+            console.log("Shuffled artists:", shuffle(response_artists));
             setArtists(shuffle(response_artists));
         } else {
             throw new Error("Invalid artists response structure");
@@ -95,13 +101,15 @@ export default function FeedPage() {
 
     const setInfoWithoutGenres = async () => {
         try {
-            const nr_albums = 100;
-            const nr_songs = 100;
+            const nr_albums = 50;
+            const nr_songs = 50;
             let path_songs = `${BASE_URL}music-data/songs/auth/random`;
             let path_albums = `${BASE_URL}music-data/albums/auth/random`;
 
-            const response_albums = await apiService('GET', path_albums, null, { count: nr_albums });
-            const response_songs = await apiService('GET', path_songs, null, { count: nr_songs });
+            const response_albums_req =  apiService('GET', path_albums, null, { count: nr_albums });
+            const response_songs_req =  apiService('GET', path_songs, null, { count: nr_songs });
+
+            const [response_albums, response_songs] = await Promise.all([response_albums_req, response_songs_req]);
 
 
             console.log("Fetched albums:", response_albums);
@@ -152,7 +160,7 @@ export default function FeedPage() {
                             size="md"
                             borderRadius="md"
                             variant={selectedGenres.includes(genre) ? "solid" : "outline"}
-                            colorScheme={selectedGenres.includes(genre) ? "blue" : "gray"}
+                            colorScheme={selectedGenres.includes(genre) ? "gray" : "gray"}
                             onClick={() => handleGenreChange(genre)}
                             cursor="pointer"
 
@@ -172,6 +180,12 @@ export default function FeedPage() {
             </Heading>
             <FeedItems items={songs.slice(0,songs.length/2-1)} type="song" />
             <FeedItems items={songs.slice(songs.length/2,songs.length-1)} type="song" />
+            
+            {selectedGenres.length >0 && <><Heading as="h2" size="md" mt={8} mb={4}>
+                Artists
+            </Heading><FeedItems items={artists} type="artist" /></>
+            }
+            
         </Box>
     );
 }
